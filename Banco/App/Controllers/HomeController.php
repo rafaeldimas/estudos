@@ -4,18 +4,35 @@ namespace App\Controllers;
 
 use App\Controllers\Controller as Controller;
 use App\Models\HomeModel as HomeModel;
+use Core\Interfaces\IController as IController;
+use Core\View as View;
 
-class HomeController extends Controller
+class HomeController extends Controller implements IController
 {
     private $model;
     private $view;
 
-    public function index()
+    public function index($request, $response, $args)
     {
+        $args = [
+            'assets' => [
+                'css' => [
+                    'reset.css',
+                    'home.css'
+                ],
+                'js' => [
+                    'home.js'
+                ]
+            ],
+            'title' => 'Pagina Inicial'
+        ];
+
         $this->setModel(new HomeModel(CONFIG_DB));
+
+        $this->setView($request, $response, $args, $this->container);
     }
 
-    public function getModel()
+    private function getModel()
     {
         return $this->model;
     }
@@ -25,14 +42,9 @@ class HomeController extends Controller
         $this->model = $model;
     }
 
-    private function getView()
+    private function setView($request, $response, $args, $container)
     {
-        return $this->view;
-    }
-
-    private function setView($view)
-    {
-        $this->view = $view;
+        $this->view = View::make($request, $response, $args, $container);
     }
 
 }
